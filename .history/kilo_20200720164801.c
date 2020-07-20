@@ -1,5 +1,4 @@
 /*** includes ***/
-
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
@@ -8,7 +7,6 @@
 #include <termios.h>
 
 /*** data ***/
-
 struct termios orig_termios;
 
 /*** terminal ***/
