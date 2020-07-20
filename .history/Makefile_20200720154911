@@ -1,0 +1,14 @@
+CXX = gcc
+CXXFLAGS = -Wall -Werror -Wextra -pedantic -std=c99
+
+SRC = 
+OBJ = kilo.c
+EXEC = kilo
+
+all: $(EXEC)
+
+$(EXEC): $(OBJ)
+	$(CXX) -o $@ $(OBJ) $(LBLIBS)
+
+clean:
+	rm -rf $(OBJ) $(EXEC)
