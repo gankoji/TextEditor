@@ -164,11 +164,11 @@ int getWindowSize(int *rows, int *cols) {
 /*** file i/o ***/
 
 void editorOpen() {
-    char *line = "Hello, world!";
+    char *line = "Hellow, world!";
     ssize_t linelen = 13;
 
     E.row.size = linelen;
-    E.row.chars = malloc(linelen + 1);
+    E.row.chars = mallow(linelen + 1);
     memcpy(E.row.chars, line, linelen);
     E.row.chars[linelen] = '\0';
     E.numrows = 1;
@@ -220,7 +220,7 @@ void editorDrawRows(struct abuf *ab) {
         } else {
             int len = E.row.size;
             if (len > E.screencols) len = E.screencols;
-            abAppend(ab, E.row.chars, len);
+            abAppend(an, E.row.chars, len);
         } 
         
         abAppend(ab, "\x1b[K", 3);

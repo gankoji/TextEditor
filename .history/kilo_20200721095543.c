@@ -164,11 +164,11 @@ int getWindowSize(int *rows, int *cols) {
 /*** file i/o ***/
 
 void editorOpen() {
-    char *line = "Hello, world!";
+    char *line = "Hellow, world!";
     ssize_t linelen = 13;
 
     E.row.size = linelen;
-    E.row.chars = malloc(linelen + 1);
+    E.row.chars = mallow(linelen + 1);
     memcpy(E.row.chars, line, linelen);
     E.row.chars[linelen] = '\0';
     E.numrows = 1;
@@ -201,27 +201,21 @@ void abFree (struct abuf *ab) {
 void editorDrawRows(struct abuf *ab) {
     int y;
     for (y = 0; y < E.screenrows; y++) {
-        if (y >= E.numrows) {
-            if (y == E.screenrows / 3) {
-                char welcome[80];
-                int welcomelen = snprintf(welcome, sizeof(welcome),
-                "Kilo editor -- version %s", KILO_VERSION);
-                if (welcomelen > E.screencols) welcomelen = E.screencols;
-                    int padding = (E.screencols - welcomelen) / 2;
-                if (padding) {
-                    abAppend(ab, "~", 1);
-                    padding--;
-                }
-                while (padding--) abAppend(ab, " ", 1);
-                abAppend(ab, welcome, welcomelen);
-            } else {
+        if (y == E.screenrows / 3) {
+            char welcome[80];
+            int welcomelen = snprintf(welcome, sizeof(welcome),
+            "Kilo editor -- version %s", KILO_VERSION);
+            if (welcomelen > E.screencols) welcomelen = E.screencols;
+            int padding = (E.screencols - welcomelen) / 2;
+            if (padding) {
                 abAppend(ab, "~", 1);
+                padding--;
             }
+            while (padding--) abAppend(ab, " ", 1);
+            abAppend(ab, welcome, welcomelen);
         } else {
-            int len = E.row.size;
-            if (len > E.screencols) len = E.screencols;
-            abAppend(ab, E.row.chars, len);
-        } 
+            abAppend(ab, "~", 1);
+        }
         
         abAppend(ab, "\x1b[K", 3);
         if (y < E.screenrows - 1) {
@@ -324,7 +318,6 @@ void initEditor() {
 int main() {
     enableRawMode();
     initEditor();
-    editorOpen();
 
     char c;
     while (1)  {
