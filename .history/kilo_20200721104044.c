@@ -231,12 +231,6 @@ void editorScroll() {
     if (E.cy >= E.rowoff + E.screenrows) {
         E.rowoff = E.cy - E.screenrows + 1;
     }
-    if (E.cx < E.coloff) {
-        E.coloff = E.cx;
-    }
-    if (E.cx >= E.coloff + E.screencols) {
-        E.coloff = E.cx - E.screencols + 1;
-    }
 }
 void editorDrawRows(struct abuf *ab) {
     int y;
@@ -283,8 +277,7 @@ void editorRefreshScreen() {
     editorDrawRows(&ab);
 
     char buf[32];
-    snprintf(buf, sizeof(buf), "\x1b[%d;%dH",   (E.cy - E.rowoff) + 1,
-                                                (E.cx - E.coloff) + 1);
+    snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowoff) + 1, E.cx + 1);
     abAppend(&ab, buf, strlen(buf));
 
     abAppend(&ab, "\x1b[?25h", 6);
@@ -296,8 +289,6 @@ void editorRefreshScreen() {
 /*** input ***/
 
 void editorMoveCursor(int key) {
-    erow *row = (E.cy >= E.numrows) ? NULL : &E.row[E.cy];
-
     switch (key) {
         case ARROW_LEFT:
             if (E.cx != 0) {
@@ -305,7 +296,7 @@ void editorMoveCursor(int key) {
             }
             break;
         case ARROW_RIGHT:
-            if (row && E.cx < row->size) {
+            if (E.cx != E.screencols - 1) {
                 E.cx++;
             }
             break;
