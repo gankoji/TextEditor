@@ -441,7 +441,8 @@ void editorFindCallback(char *query, int key) {
             last_match = current;
             E.cy = current;
             E.cx = editorRowRxToCx(row, match - row->render);
-            E.rowoff = E.numrows;
+            /*E.rowoff = E.numrows;*/
+            E.rowoff = current;
             break;
         }
     }
