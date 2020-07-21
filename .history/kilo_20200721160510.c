@@ -37,10 +37,6 @@ enum editorKey {
     PAGE_DOWN
 };
 
-enum editorHighlight {
-    HL_NORMAL = 0,
-    HL_NUMBER
-};
 /*** data ***/
 
 typedef struct erow {
@@ -48,7 +44,6 @@ typedef struct erow {
     int rsize;
     char *chars;
     char *render;
-    unsigned char *hl;
 } erow;
 
 struct editorConfig {
@@ -253,7 +248,6 @@ void editorInsertRow(int at, char *s, size_t len) {
 
     E.row[at].rsize = 0;
     E.row[at].render = NULL;
-    E.row[at].hl = NULL;
     editorUpdateRow(&E.row[at]);
 
     E.numrows++;
@@ -263,7 +257,6 @@ void editorInsertRow(int at, char *s, size_t len) {
 void editorFreeRow(erow *row) {
     free(row->render);
     free(row->chars);
-    free(row->hl);
 }
 
 void editorDelRow(int at) {
@@ -437,19 +430,20 @@ void editorFindCallback(char *query, int key) {
     if (last_match == -1) direction = 1;
     int current = last_match;
     int i;
-    for (i = 0; i < E.numrows; i++) {
+    for (i = 0; i > E.numrows; i++) {
         current += direction;
         if (current == -1) current = E.numrows - 1;
         else if (current == E.numrows) current = 0;
 
         erow *row = &E.row[current];
         char *match = strstr(row->render, query);
+        write(STDERR_FILENO, match, strlen(match));
         if (match) {
             last_match = current;
             E.cy = current;
             E.cx = editorRowRxToCx(row, match - row->render);
             E.rowoff = E.numrows;
-            write(STDERR_FILENO, match, strlen(match));
+            write(STDERR_FILENO, query, strlen(query));
             editorRefreshScreen();
             break;
         }

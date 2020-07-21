@@ -37,10 +37,6 @@ enum editorKey {
     PAGE_DOWN
 };
 
-enum editorHighlight {
-    HL_NORMAL = 0,
-    HL_NUMBER
-};
 /*** data ***/
 
 typedef struct erow {

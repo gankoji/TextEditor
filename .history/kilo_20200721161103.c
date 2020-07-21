@@ -37,10 +37,6 @@ enum editorKey {
     PAGE_DOWN
 };
 
-enum editorHighlight {
-    HL_NORMAL = 0,
-    HL_NUMBER
-};
 /*** data ***/
 
 typedef struct erow {
@@ -263,7 +259,6 @@ void editorInsertRow(int at, char *s, size_t len) {
 void editorFreeRow(erow *row) {
     free(row->render);
     free(row->chars);
-    free(row->hl);
 }
 
 void editorDelRow(int at) {

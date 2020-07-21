@@ -37,10 +37,6 @@ enum editorKey {
     PAGE_DOWN
 };
 
-enum editorHighlight {
-    HL_NORMAL = 0,
-    HL_NUMBER
-};
 /*** data ***/
 
 typedef struct erow {
@@ -48,7 +44,6 @@ typedef struct erow {
     int rsize;
     char *chars;
     char *render;
-    unsigned char *hl;
 } erow;
 
 struct editorConfig {
@@ -253,7 +248,6 @@ void editorInsertRow(int at, char *s, size_t len) {
 
     E.row[at].rsize = 0;
     E.row[at].render = NULL;
-    E.row[at].hl = NULL;
     editorUpdateRow(&E.row[at]);
 
     E.numrows++;
@@ -263,7 +257,6 @@ void editorInsertRow(int at, char *s, size_t len) {
 void editorFreeRow(erow *row) {
     free(row->render);
     free(row->chars);
-    free(row->hl);
 }
 
 void editorDelRow(int at) {
@@ -437,7 +430,7 @@ void editorFindCallback(char *query, int key) {
     if (last_match == -1) direction = 1;
     int current = last_match;
     int i;
-    for (i = 0; i < E.numrows; i++) {
+    for (i = 0; i > E.numrows; i++) {
         current += direction;
         if (current == -1) current = E.numrows - 1;
         else if (current == E.numrows) current = 0;
@@ -449,8 +442,6 @@ void editorFindCallback(char *query, int key) {
             E.cy = current;
             E.cx = editorRowRxToCx(row, match - row->render);
             E.rowoff = E.numrows;
-            write(STDERR_FILENO, match, strlen(match));
-            editorRefreshScreen();
             break;
         }
     }
@@ -528,8 +519,7 @@ void editorDrawRows(struct abuf *ab) {
                 int welcomelen = snprintf(welcome, sizeof(welcome),
                     "Kilo editor -- version %s", KILO_VERSION);
                 if (welcomelen > E.screencols) welcomelen = E.screencols;
-
-                int padding = (E.screencols - welcomelen) / 2;
+                    int padding = (E.screencols - welcomelen) / 2;
                 if (padding) {
                     abAppend(ab, "~", 1);
                     padding--;
@@ -543,17 +533,7 @@ void editorDrawRows(struct abuf *ab) {
             int len = E.row[filerow].rsize - E.coloff;
             if (len < 0) len = 0;
             if (len > E.screencols) len = E.screencols;
-            char *c = &E.row[filerow].render[E.coloff];
-            int j;
-            for (j=0; j < len; j++) {
-                if (isdigit(c[j])) {
-                    abAppend(ab, "\x1b[31m", 5);
-                    abAppend(ab, &c[j], 1);
-                    abAppend(ab, "\x1b[39m", 5);
-                } else {
-                    abAppend(ab, &c[j], 1);
-                }
-            }
+            abAppend(ab, &E.row[filerow].render[E.coloff], len);
         } 
         
         abAppend(ab, "\x1b[K", 3);
