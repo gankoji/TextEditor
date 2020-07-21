@@ -6,7 +6,6 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -355,7 +354,6 @@ void editorDrawMessageBar(struct abuf *ab) {
     if (msglen && time(NULL) - E.statusmsg_time < 5)
         abAppend(ab, E.statusmsg, msglen);
 }
-
 void editorRefreshScreen() {
     editorScroll();
 
@@ -366,7 +364,6 @@ void editorRefreshScreen() {
 
     editorDrawRows(&ab);
     editorDrawStatusBar(&ab);
-    editorDrawMessageBar(&ab);
 
     char buf[32];
     snprintf(buf, sizeof(buf), "\x1b[%d;%dH",   (E.cy - E.rowoff) + 1,
