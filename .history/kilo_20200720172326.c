@@ -11,8 +11,6 @@
 
 /*** defines ***/
 
-#define KILO_VERSION "0.0.1"
-
 #define CTRL_KEY(k) ((k) & 0x1f)
 
 /*** data ***/
@@ -108,19 +106,6 @@ struct abuf {
 
 #define ABUF_INIT {NULL, 0}
 
-void abAppend(struct abuf *ab, const char *s, int len) {
-    char *new = realloc(ab->b, ab->len + len);
-
-    if (new == NULL) return;
-    memcpy (&new[ab->len], s, len);
-    ab->b = new;
-    ab->len += len;
-}
-
-void abFree (struct abuf *ab) {
-    free(ab->b);
-}
-
 /*** input ***/
 
 void editorProcessKeypress() {
@@ -136,47 +121,23 @@ void editorProcessKeypress() {
 }
 
 /*** output ***/
-void editorDrawRows(struct abuf *ab) {
+void editorDrawRows() {
     int y;
     for (y = 0; y < E.screenrows; y++) {
-        if (y == E.screenrows / 3) {
-            char welcome[80];
-            int welcomelen = snprintf(welcome, sizeof(welcome),
-            "Kilo editor -- version %s", KILO_VERSION);
-            if (welcomelen > E.screencols) welcomelen = E.screencols;
-            int padding = (E.screencols - welcomelen) / 2;
-            if (padding) {
-                abAppend(ab, "~", 1);
-                padding--;
-            }
-            while (padding--) abAppend(ab, " ", 1);
-            abAppend(ab, welcome, welcomelen);
-        } else {
-            abAppend(ab, "~", 1);
-        }
+        write(STDOUT_FILENO, "~", 1);
 
-        abAppend(ab, "\x1b[K", 3);
         if (y < E.screenrows - 1) {
-            abAppend(ab, "\r\n", 2);
+            write(STDOUT_FILENO, "~\r\n", 3);
         }
     }
 }
-
 void editorRefreshScreen() {
-    struct abuf ab = ABUF_INIT;
+    write(STDOUT_FILENO, "\x1b[2j", 4);
+    write(STDOUT_FILENO, "\x1b[H", 3);
 
-    abAppend(&ab, "\x1b[?25l", 6);
-    abAppend(&ab, "\x1b[H", 3);
-
-    editorDrawRows(&ab);
-
-    abAppend(&ab, "\x1b[H", 3);
-    abAppend(&ab, "\x1b[?25h", 6);
-
-    write(STDOUT_FILENO, ab.b, ab.len);
-    abFree(&ab);
+    editorDrawRows();
+    write(STDOUT_FILENO, "\x1b[H", 3);
 }
-
 /*** init ***/
 
 void initEditor() {
