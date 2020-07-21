@@ -296,7 +296,7 @@ void editorInsertNewline() {
     } else {
         erow *row = &E.row[E.cy];
         editorInsertRow(E.cy + 1, &row->chars[E.cx], row->size - E.cx);
-        row = &E.row[E.cy];
+        row = *E.row[E.cy];
         row->size = E.cx;
         row->chars[row->size] = '\0';
         editorUpdateRow(row);
@@ -546,9 +546,7 @@ char * editorPrompt(char *prompt) {
         editorRefreshScreen();
 
         int c = editorReadKey();
-        if (c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE) {
-            if (buflen != 0) buf[--buflen] = '\0';
-        } else if (c == '\x1b') {
+        if (c == '\x1b') {
             editorSetStatusMessage("");
             free(buf);
             return NULL;
